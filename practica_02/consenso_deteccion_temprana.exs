@@ -109,7 +109,7 @@ defmodule ConsensoDeteccionTemprana do
       :ronda => ronda,
       :flag => flag
       } = estado
-    if :rand.normal() <= prob do
+    if :rand.uniform() <= prob do
       if envio_al_menos_un_mensaje() do
         IO.puts "ID (#{id}): Voy a morir en la ronda #{ronda}, pero al menos enviaré algún mensaje"
         n = Enum.count(vecinos)
