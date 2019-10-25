@@ -4,7 +4,7 @@ defmodule Consenso1Falla do
     estado_inicial = %{:prop => 0, :propuestas => %{}, :decide => false,
                        :envio_mensaje => false, :fallido => false,
                        :prob_fallo => 0, :ronda => 0, :min => nil,
-                       :minimos => %{}, :continua => false,
+                       :minimos => %{}, :continua => false, :inicio_ronda_mins => nil,
                        :inicio_ronda => nil, :prop_recibidas => false}
     recibe_mensaje(estado_inicial)
   end
@@ -66,12 +66,12 @@ defmodule Consenso1Falla do
   end
 
   def procesa_mensaje(:timeout_mins, estado) do
-    %{:inicio_ronda => inicio} = estado
+    %{:inicio_ronda_mins => inicio} = estado
     t = :os.system_time(:millisecond)
     # Esperamos 100ms para recibir todos los mínimos antes de
     # decidir. En caso de que aún haya pasado un segundo, seguimos
     # esperando a recibir todos los mensajes con los mínimos.
-    estado = if (t - inicio) > 1000 do
+    estado = if (inicio != nil) and (t - inicio) > 1000 do
       consenso(%{estado | :decide => true})
     else
       send self(), :timeout_mins
@@ -149,12 +149,12 @@ defmodule Consenso1Falla do
       ronda = ronda + 1
       # Calculamos el mínimo
       propuestas = Map.put(propuestas, id, prop)
-      # IO.inspect propuestas, label: "ID: #{id}, Las propuestas recibidas son, debe continuar #{continua?}"
+      # IO.inspect estado, label: "ID: #{id}, Las propuestas recibidas son, debe continuar #{continua?}"
       m = Enum.min(Map.values(propuestas))
       Enum.map(vecinos, fn v -> send(v, {:id, id, :minimo, m, :ronda, ronda}) end)
       inicio = :os.system_time(:millisecond)
-      %{estado | :ronda => ronda, :inicio_ronda => inicio, :min => m,
-                 :continua => false, :prop_recibidas => true}
+      %{estado | :ronda => ronda, :inicio_ronda_mins => inicio, :min => m,
+                 :prop_recibidas => true}
     else
       estado
     end
