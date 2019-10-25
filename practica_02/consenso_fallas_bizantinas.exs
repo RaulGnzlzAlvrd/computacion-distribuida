@@ -238,9 +238,9 @@ defmodule ConsensoFallasBizantinas do
         ronda = :ronda_2
         # Calculamos el mínimo
         propuestas = Map.put(propuestas, id, prop)
-        IO.inspect propuestas, label: "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mis propuestas son"
+        #IO.inspect propuestas, label: "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mis propuestas son"
         {prop_f, num_prop_f} = obtener_el_mas_frecuente(propuestas)
-        IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mas frecuente: #{prop_f}, tamaño: #{num_prop_f}"
+        #IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mas frecuente: #{prop_f}, tamaño: #{num_prop_f}"
 
         ## Manda mensaje si es lider de la fase.
         if id == fase do
