@@ -171,7 +171,7 @@ defmodule ConsensoFallasBizantinas do
     #IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): Posiblemente mande mensajes incorrectos. Ronda: #{ronda}"
     if :rand.uniform() <= proba_fallo do
       fake_props = [1, 2, 4, 8, 16, 1024]
-      #IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): Voy a mandar un valor falso a cada proceso"
+      #IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): Voy a mandar un valor falso a cada proceso."
       Enum.map(
         vecinos, 
         fn v -> 
@@ -238,9 +238,9 @@ defmodule ConsensoFallasBizantinas do
         ronda = :ronda_2
         # Calculamos el mínimo
         propuestas = Map.put(propuestas, id, prop)
-        IO.inspect propuestas, label: "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mis propuestas son"
+        #IO.inspect propuestas, label: "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mis propuestas son"
         {prop_f, num_prop_f} = obtener_el_mas_frecuente(propuestas)
-        IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mas frecuente: #{prop_f}, tamaño: #{num_prop_f}"
+        #IO.puts "(id:#{id}, fase:#{fase}, ronda:#{ronda}): mas frecuente: #{prop_f}, tamaño: #{num_prop_f}"
 
         ## Manda mensaje si es lider de la fase.
         if id == fase do
@@ -302,9 +302,7 @@ defmodule ConsensoFallasBizantinas do
         estado
       end
     else
-      if not bizantino? do
-        IO.puts "Soy el proceso #{id} y la decisión es #{prop} despues de la fase #{fase - 1}"
-      end
+      IO.puts "Soy el proceso #{id} y la decisión es #{prop} despues de la fase #{fase - 1}"
       Process.exit(self(), :kill)
     end
   end
@@ -333,7 +331,7 @@ end
 
 ##########
 
-t = 6
+t = 10
 
 p1 = spawn(ConsensoFallasBizantinas, :inicio, [])
 p2 = spawn(ConsensoFallasBizantinas, :inicio, [])
@@ -383,6 +381,7 @@ send p3, {:id, 3}
 send p3, {:vecinos, List.delete(vecinos, p3)}
 send p3, {:prop, 20}
 send p3, {:max_fallos, t}
+send p1, {:bizantino, true, :prob_fallo, 0.3}
 
 send p4, {:id, 4}
 send p4, {:vecinos, List.delete(vecinos, p4)}
@@ -393,7 +392,7 @@ send p5, {:id, 5}
 send p5, {:vecinos, List.delete(vecinos, p5)}
 send p5, {:prop, 20}
 send p5, {:max_fallos, t}
-send p5, {:bizantino, true, :prob_fallo, 0.5}
+send p1, {:bizantino, true, :prob_fallo, 0.5}
 
 send p6, {:id, 6}
 send p6, {:vecinos, List.delete(vecinos, p6)}
@@ -404,7 +403,6 @@ send p7, {:id, 7}
 send p7, {:vecinos, List.delete(vecinos, p7)}
 send p7, {:prop, 15}
 send p7, {:max_fallos, t}
-send p7, {:bizantino, true, :prob_fallo, 0.3}
 
 send p8, {:id, 8}
 send p8, {:vecinos, List.delete(vecinos, p8)}
@@ -415,22 +413,25 @@ send p9, {:id, 9}
 send p9, {:vecinos, List.delete(vecinos, p9)}
 send p9, {:prop, 12}
 send p9, {:max_fallos, t}
-send p9, {:bizantino, true, :prob_fallo, 0.1}
+send p1, {:bizantino, true, :prob_fallo, 0.9}
 
 send p10, {:id, 10}
 send p10, {:vecinos, List.delete(vecinos, p10)}
 send p10, {:prop, 34}
 send p10, {:max_fallos, t}
+send p1, {:bizantino, true, :prob_fallo, 0.9}
 
 send p11, {:id, 11}
 send p11, {:vecinos, List.delete(vecinos, p11)}
 send p11, {:prop, 67}
 send p11, {:max_fallos, t}
+send p1, {:bizantino, true, :prob_fallo, 0.9}
 
 send p12, {:id, 12}
 send p12, {:vecinos, List.delete(vecinos, p12)}
 send p12, {:prop, 13}
 send p12, {:max_fallos, t}
+send p1, {:bizantino, true, :prob_fallo, 0.9}
 
 send p13, {:id, 13}
 send p13, {:vecinos, List.delete(vecinos, p13)}
@@ -471,7 +472,7 @@ send p20, {:id, 20}
 send p20, {:vecinos, List.delete(vecinos, p20)}
 send p20, {:prop, 23}
 send p20, {:max_fallos, t}
-send p20, {:bizantino, true, :prob_fallo, 0.75}
+send p1, {:bizantino, true, :prob_fallo, 0.75}
 
 send p21, {:id, 21}
 send p21, {:vecinos, List.delete(vecinos, p21)}
@@ -496,7 +497,7 @@ send p24, {:max_fallos, t}
 send p25, {:id, 25}
 send p25, {:vecinos, List.delete(vecinos, p25)}
 send p25, {:prop, 50}
-send p25, {:max_fallos, t}
+send p1, {:bizantino, true, :prob_fallo, 0.9}
 
 send p26, {:id, 26}
 send p26, {:vecinos, List.delete(vecinos, p26)}
@@ -522,7 +523,7 @@ send p30, {:id, 30}
 send p30, {:vecinos, List.delete(vecinos, p30)}
 send p30, {:prop, 2}
 send p30, {:max_fallos, t}
-send p30, {:bizantino, true, :prob_fallo, 0.9}
+send p1, {:bizantino, true, :prob_fallo, 0.9}
 
 
 send p1, {:inicia}
@@ -556,6 +557,8 @@ send p28, {:inicia}
 send p29, {:inicia}
 send p30, {:inicia}
 
-IO.puts "\n  =======================================  "
-IO.puts "  | Tarda un poco, espera por favor xD  |  "
-IO.puts "  =======================================  \n"
+IO.puts "\n  ========================================  "
+IO.puts "  | Tarda un poco, espera por favor xD   |  "
+IO.puts "  | Tiene 10 procesos bizantinos, este   |  "
+IO.puts "  | cuando solo puede admitir a lo mas 7 |  "
+IO.puts "  ========================================  \n"
